@@ -11,7 +11,7 @@ export const PersonalInfoTab: React.FC = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = () => {
+    reader.onload = async () => {
       const dataUrl = reader.result as string;
       const cleanName = 'profile.jpg';
       addUploadedImage({
@@ -20,16 +20,20 @@ export const PersonalInfoTab: React.FC = () => {
         dataUrl,
         suggestedPath: `/${cleanName}`,
       });
-      // Set to local preview path or dataUrl
+      // Set to local preview path or dataUrl immediately
       updateField('profileImage', dataUrl);
 
       // Auto-save to public/ folder if running locally in dev mode
       if (import.meta.env.DEV) {
-        fetch('/api/save-image', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ filename: cleanName, base64: dataUrl }),
-        }).catch(() => {});
+        try {
+          await fetch('/api/save-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: cleanName, base64: dataUrl }),
+          });
+        } catch (err) {
+          console.warn('Auto-save image error', err);
+        }
       }
     };
     reader.readAsDataURL(file);

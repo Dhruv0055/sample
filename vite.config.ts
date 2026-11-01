@@ -41,7 +41,11 @@ function localDevSyncPlugin(): Plugin {
             try {
               const { filename, base64 } = JSON.parse(body)
               const cleanName = (filename || 'profile.jpg').toLowerCase().replace(/[^a-z0-9_.-]/g, '-')
-              const targetPath = path.resolve(process.cwd(), 'public', cleanName)
+              const publicDir = path.resolve(process.cwd(), 'public')
+              if (!fs.existsSync(publicDir)) {
+                fs.mkdirSync(publicDir, { recursive: true })
+              }
+              const targetPath = path.resolve(publicDir, cleanName)
               const base64Data = base64.replace(/^data:image\/\w+;base64,/, '')
               fs.writeFileSync(targetPath, Buffer.from(base64Data, 'base64'))
               res.setHeader('Content-Type', 'application/json')

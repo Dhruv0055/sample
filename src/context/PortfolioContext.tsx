@@ -65,8 +65,14 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return [];
   });
 
-  // Auto-reload whenever src/data/portfolioData.ts file on disk is updated
+  const isSelfSyncing = React.useRef<boolean>(false);
+
+  // Auto-reload whenever src/data/portfolioData.ts file on disk is updated by external editor
   useEffect(() => {
+    if (isSelfSyncing.current) {
+      isSelfSyncing.current = false;
+      return;
+    }
     setData(defaultData);
     setHasUnsavedChanges(false);
   }, [defaultData]);
@@ -186,7 +192,22 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const syncToDisk = async (customData?: SiteConfig): Promise<boolean> => {
     if (!import.meta.env.DEV) return false;
     try {
+      isSelfSyncing.current = true;
       const target = customData || data;
+
+      // If profileImage is a base64 dataUrl, persist it to public/profile.jpg first
+      if (target.profileImage?.startsWith('data:')) {
+        try {
+          await fetch('/api/save-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: 'profile.jpg', base64: target.profileImage }),
+          });
+        } catch (e) {
+          console.warn('Failed to save profile image to disk', e);
+        }
+      }
+
       const sanitized = {
         ...target,
         profileImage: target.profileImage?.startsWith('data:') ? '/profile.jpg' : target.profileImage,
@@ -219,9 +240,16 @@ export const PortfolioProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const saveChanges = async () => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      let currentData = data;
+      // If photo was uploaded as data: URL, update in-memory path with timestamp after saving to avoid browser cache lock
+      if (data.profileImage?.startsWith('data:')) {
+        const timestamped = `/profile.jpg?t=${Date.now()}`;
+        currentData = { ...data, profileImage: timestamped };
+        setData(currentData);
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
       setHasUnsavedChanges(false);
-      await syncToDisk();
+      await syncToDisk(data);
     } catch (e) {
       console.error('Failed to save to localStorage', e);
       alert('Local storage is full or disabled. Please click "Export Configuration" to download your config file.');
