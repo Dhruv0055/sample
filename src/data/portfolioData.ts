@@ -2,10 +2,10 @@ import type { SiteConfig } from '../types/portfolio';
 
 /**
  * Editfolio Master Configuration
- * Automatically saved via Editfolio Local Customizer
+ * Clean Commercial Template Defaults
  */
 export const portfolioData: SiteConfig = {
-  "brandName": "Dhruv",
+  "brandName": "Alex Rivera",
   "profession": "Freelance Video Editor",
   "tagline": "High-Retention Video Editing & Commercial Color Finishing",
   "heroStatement": "I transform raw footage into engaging visual stories designed to capture attention and elevate your brand.",
@@ -21,9 +21,9 @@ export const portfolioData: SiteConfig = {
   "profileImage": "/profile.jpg",
   "masterDriveFolder": "https://drive.google.com",
   "contact": {
-    "email": "dhru123@gmail.com",
-    "whatsapp": "",
-    "whatsappNumber": "",
+    "email": "alex.rivera.edits@gmail.com",
+    "whatsapp": "+1 (555) 019-2834",
+    "whatsappNumber": "15550192834",
     "instagram": "@alexrivera.edits",
     "instagramUrl": "https://instagram.com",
     "linkedin": "alex-rivera-video",
@@ -238,29 +238,6 @@ export const portfolioData: SiteConfig = {
     }
   ],
   "projects": [
-    {
-      "id": "new-project-5",
-      "slug": "project-5",
-      "number": "05",
-      "title": "m1",
-      "category": "SHORT-FORM",
-      "year": "2026",
-      "shortDescription": "",
-      "fullDescription": "",
-      "role": [
-        "Lead Video Editor"
-      ],
-      "tools": [
-        "Premiere Pro",
-        "DaVinci Resolve"
-      ],
-      "videoSourceType": "local",
-      "videoUrl": "/project-5.mp4",
-      "googleDriveUrl": "",
-      "previewVideoUrl": "/project-5.mp4",
-      "posterImage": "/project-5-thumb.jpg",
-      "featured": true
-    },
     {
       "id": "project-commercial",
       "slug": "commercial-brand-film",
